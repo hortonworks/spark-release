@@ -171,16 +171,6 @@ private[python] object PythonDStream {
   }
 
   /**
-   * Update the port of callback client to `port`
-   */
-  def updatePythonGatewayPort(gws: GatewayServer, port: Int): Unit = {
-    val cl = gws.getCallbackClient
-    val f = cl.getClass.getDeclaredField("port")
-    f.setAccessible(true)
-    f.setInt(cl, port)
-  }
-
-  /**
    * helper function for DStream.foreachRDD(),
    * cannot be `foreachRDD`, it will confusing py4j
    */
