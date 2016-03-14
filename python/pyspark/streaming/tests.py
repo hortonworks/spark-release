@@ -986,10 +986,7 @@ class KafkaStreamTests(PySparkStreamingTestCase):
 
     def setUp(self):
         super(KafkaStreamTests, self).setUp()
-
-        kafkaTestUtilsClz = self.ssc._jvm.java.lang.Thread.currentThread().getContextClassLoader()\
-            .loadClass("org.apache.spark.streaming.kafka.KafkaTestUtils")
-        self._kafkaTestUtils = kafkaTestUtilsClz.newInstance()
+        self._kafkaTestUtils = self.ssc._jvm.org.apache.spark.streaming.kafka.KafkaTestUtils()
         self._kafkaTestUtils.setup()
 
     def tearDown(self):
@@ -1251,10 +1248,7 @@ class FlumeStreamTests(PySparkStreamingTestCase):
 
     def setUp(self):
         super(FlumeStreamTests, self).setUp()
-
-        utilsClz = self.ssc._jvm.java.lang.Thread.currentThread().getContextClassLoader() \
-            .loadClass("org.apache.spark.streaming.flume.FlumeTestUtils")
-        self._utils = utilsClz.newInstance()
+        self._utils = self.ssc._jvm.org.apache.spark.streaming.flume.FlumeTestUtils()
 
     def tearDown(self):
         if self._utils is not None:
@@ -1319,10 +1313,7 @@ class FlumePollingStreamTests(PySparkStreamingTestCase):
     maxAttempts = 5
 
     def setUp(self):
-        utilsClz = \
-            self.sc._jvm.java.lang.Thread.currentThread().getContextClassLoader() \
-                .loadClass("org.apache.spark.streaming.flume.PollingFlumeTestUtils")
-        self._utils = utilsClz.newInstance()
+        self._utils = self.sc._jvm.org.apache.spark.streaming.flume.PollingFlumeTestUtils()
 
     def tearDown(self):
         if self._utils is not None:
@@ -1399,10 +1390,7 @@ class MQTTStreamTests(PySparkStreamingTestCase):
 
     def setUp(self):
         super(MQTTStreamTests, self).setUp()
-
-        MQTTTestUtilsClz = self.ssc._jvm.java.lang.Thread.currentThread().getContextClassLoader() \
-            .loadClass("org.apache.spark.streaming.mqtt.MQTTTestUtils")
-        self._MQTTTestUtils = MQTTTestUtilsClz.newInstance()
+        self._MQTTTestUtils = self.ssc._jvm.org.apache.spark.streaming.mqtt.MQTTTestUtils()
         self._MQTTTestUtils.setup()
 
     def tearDown(self):
@@ -1478,10 +1466,7 @@ class KinesisStreamTests(PySparkStreamingTestCase):
 
         import random
         kinesisAppName = ("KinesisStreamTests-%d" % abs(random.randint(0, 10000000)))
-        kinesisTestUtilsClz = \
-            self.sc._jvm.java.lang.Thread.currentThread().getContextClassLoader() \
-                .loadClass("org.apache.spark.streaming.kinesis.KinesisTestUtils")
-        kinesisTestUtils = kinesisTestUtilsClz.newInstance()
+        kinesisTestUtils = self.ssc._jvm.org.apache.spark.streaming.kinesis.KinesisTestUtils()
         try:
             kinesisTestUtils.createStream()
             aWSCredentials = kinesisTestUtils.getAWSCredentials()
