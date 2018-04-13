@@ -119,7 +119,7 @@ object EvaluatePython {
   def apply(udf: PythonUDF, child: LogicalPlan): EvaluatePython =
     new EvaluatePython(udf, child, AttributeReference("pythonUDF", udf.dataType)())
 
-  def takeAndServe(df: DataFrame, n: Int): Int = {
+  def takeAndServe(df: DataFrame, n: Int): Array[Any] = {
     registerPicklers()
     df.withNewExecutionId {
       val iter = new SerDeUtil.AutoBatchedPickler(

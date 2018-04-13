@@ -1735,7 +1735,7 @@ class DataFrame private[sql](
     EvaluatePython.javaToPython(rdd)
   }
 
-  protected[sql] def collectToPython(): Int = {
+  protected[sql] def collectToPython(): Array[Any] = {
     withNewExecutionId {
       PythonRDD.collectAndServe(javaToPython.rdd)
     }

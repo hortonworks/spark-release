@@ -39,9 +39,11 @@ if sys.version > '3':
 else:
     from itertools import imap as map, ifilter as filter
 
+from pyspark.java_gateway import do_server_auth
 from pyspark.serializers import NoOpSerializer, CartesianDeserializer, \
     BatchedSerializer, CloudPickleSerializer, PairDeserializer, \
-    PickleSerializer, pack_long, AutoBatchedSerializer
+    PickleSerializer, pack_long, AutoBatchedSerializer, write_with_length, \
+    UTF8Deserializer
 from pyspark.join import python_join, python_left_outer_join, \
     python_right_outer_join, python_full_outer_join, python_cogroup
 from pyspark.statcounter import StatCounter
@@ -120,7 +122,8 @@ def _parse_memory(s):
     return int(float(s[:-1]) * units[s[-1].lower()])
 
 
-def _load_from_socket(port, serializer):
+def _load_from_socket(sock_info, serializer):
+    port, auth_secret = sock_info
     sock = None
     # Support for both IPv4 and IPv6.
     # On most of IPv6-ready systems, IPv6 will take precedence.
@@ -138,7 +141,8 @@ def _load_from_socket(port, serializer):
     if not sock:
         raise Exception("could not open socket")
     try:
-        rf = sock.makefile("rb", 65536)
+        rf = sock.makefile("rwb", 65536)
+        do_server_auth(rf, auth_secret)
         for item in serializer.load_stream(rf):
             yield item
     finally:
@@ -768,8 +772,8 @@ class RDD(object):
         Return a list that contains all of the elements in this RDD.
         """
         with SCCallSiteSync(self.context) as css:
-            port = self.ctx._jvm.PythonRDD.collectAndServe(self._jrdd.rdd())
-        return list(_load_from_socket(port, self._jrdd_deserializer))
+            sock_info = self.ctx._jvm.PythonRDD.collectAndServe(self._jrdd.rdd())
+        return list(_load_from_socket(sock_info, self._jrdd_deserializer))
 
     def reduce(self, f):
         """
