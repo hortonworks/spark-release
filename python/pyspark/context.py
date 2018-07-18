@@ -173,11 +173,12 @@ class SparkContext(object):
 
         # Create a single Accumulator in Java that we'll send all our updates through;
         # they will be passed back to us through a TCP server
-        self._accumulatorServer = accumulators._start_update_server()
+        auth_token = self._gateway.gateway_parameters.auth_token
+        self._accumulatorServer = accumulators._start_update_server(auth_token)
         (host, port) = self._accumulatorServer.server_address
         self._javaAccumulator = self._jsc.accumulator(
             self._jvm.java.util.ArrayList(),
-            self._jvm.PythonAccumulatorParam(host, port))
+            self._jvm.PythonAccumulatorParam(host, port, auth_token))
 
         self.pythonExec = os.environ.get("PYSPARK_PYTHON", 'python')
         if self._conf.get("spark.pyspark.virtualenv.enabled") == "true":

@@ -832,8 +832,11 @@ class BytesToString extends org.apache.spark.api.java.function.Function[Array[By
  * Internal class that acts as an `AccumulatorParam` for Python accumulators. Inside, it
  * collects a list of pickled strings that we pass to Python through a socket.
  */
-private class PythonAccumulatorParam(@transient private val serverHost: String, serverPort: Int)
-  extends AccumulatorParam[JList[Array[Byte]]] {
+private class PythonAccumulatorParam(
+    @transient private val serverHost: String,
+    private val serverPort: Int,
+    private val secretToken: String)
+  extends AccumulatorParam[JList[Array[Byte]]] with Logging {
 
   Utils.checkHost(serverHost, "Expected hostname")
 
@@ -848,6 +851,9 @@ private class PythonAccumulatorParam(@transient private val serverHost: String, 
   def openSocket(): Socket = synchronized {
     if (socket == null || socket.isClosed) {
       socket = new Socket(serverHost, serverPort)
+      logInfo(s"Connected to AccumulatorServer at host: $serverHost port: $serverPort")
+      // send the secret just for the initial authentication when opening a new connection
+      socket.getOutputStream.write(secretToken.getBytes(UTF_8))
     }
     socket
   }
