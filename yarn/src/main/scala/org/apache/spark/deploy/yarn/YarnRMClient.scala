@@ -106,7 +106,16 @@ private[spark] class YarnRMClient(args: ApplicationMasterArguments) extends Logg
       val proxies = method.invoke(null, conf).asInstanceOf[JList[String]]
       val hosts = proxies.asScala.map { proxy => proxy.split(":")(0) }
       val uriBases = proxies.asScala.map { proxy => prefix + proxy + proxyBase }
-      Map("PROXY_HOSTS" -> hosts.mkString(","), "PROXY_URI_BASES" -> uriBases.mkString(","))
+      val params =
+        Map("PROXY_HOSTS" -> hosts.mkString(","), "PROXY_URI_BASES" -> uriBases.mkString(","))
+
+      // Handles RM HA urls
+      val rmIds = conf.getStringCollection(YarnConfiguration.RM_HA_IDS).asScala
+      if (rmIds != null && rmIds.nonEmpty) {
+        params + ("RM_HA_URLS" -> rmIds.map(getUrlByRmId(conf, _)).mkString(","))
+      } else {
+        params
+      }
     } catch {
       case e: NoSuchMethodException =>
         val proxy = WebAppUtils.getProxyHostAndPort(conf)
@@ -129,4 +138,21 @@ private[spark] class YarnRMClient(args: ApplicationMasterArguments) extends Logg
     retval
   }
 
+  private def getUrlByRmId(conf: Configuration, rmId: String): String = {
+    val addressPropertyPrefix = if (YarnConfiguration.useHttps(conf)) {
+      YarnConfiguration.RM_WEBAPP_HTTPS_ADDRESS
+    } else {
+      YarnConfiguration.RM_WEBAPP_ADDRESS
+    }
+
+    val addressWithRmId = if (rmId == null || rmId.isEmpty) {
+      addressPropertyPrefix
+    } else if (rmId.startsWith(".")) {
+      throw new IllegalStateException(s"rmId $rmId should not already have '.' prepended.")
+    } else {
+      s"$addressPropertyPrefix.$rmId"
+    }
+
+    conf.get(addressWithRmId)
+  }
 }

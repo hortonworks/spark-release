@@ -106,3 +106,4 @@ BUG FIXES
   SPARK-20059   Use the correct classloader for HBaseCredentialProvider
   EAR-6580      STS memory leak when impersonation is enabled
   SPARK-21738   Thriftserver doesn't cancel jobs when session is closed
+  SPARK-23679   Setting RM_HA_URLS for AmIpFilter to avoid redirect failure in YARN mode
