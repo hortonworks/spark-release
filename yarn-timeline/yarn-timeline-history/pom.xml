@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.apache.spark</groupId>
     <artifactId>spark-parent_2.10</artifactId>
-    <version>1.6.3.2.6.5.0-SNAPSHOT</version>
+    <version>1.6.3.2.6.5.165-3</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>org.apache.spark</groupId>
   <artifactId>spark-yarn-timeline-history_2.10</artifactId>
   <packaging>jar</packaging>
   <name>Spark Project YARN Timeline History Support</name>
-  <version>1.6.3.2.6.5.0-SNAPSHOT</version>
+  <version>1.6.3.2.6.5.165-3</version>
   <description>
     This module adds support for the YARN Application Timeline Server
     as a repository of spark histories: applications may publish to it;
