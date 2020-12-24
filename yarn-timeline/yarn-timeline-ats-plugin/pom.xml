@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.apache.spark</groupId>
     <artifactId>spark-parent_2.10</artifactId>
-    <version>1.6.3.2.6.5.0-SNAPSHOT</version>
+    <version>1.6.3.2.6.5.314-1</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>org.apache.spark</groupId>
@@ -44,7 +44,7 @@
     It is not intended for incorporation in any assembly JAR, and is only
     used by the yarn-timeline-history module at test time.
   </description>
-  <version>1.6.3.2.6.5.0-SNAPSHOT</version>
+  <version>1.6.3.2.6.5.314-1</version>
   <properties>
     <sbt.project.name>spark-yarn-timeline-ats-plugin</sbt.project.name>
   </properties>
